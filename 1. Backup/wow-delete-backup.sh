@@ -16,10 +16,8 @@
 ######################################################################################
 
 # Define the database names in an array for processing, database IP, and folder structure for backups
-dbNames[0]="acore_auth"
-dbNames[1]="acore_world"
-dbNames[2]="acore_characters"
 backupRoot="$HOME/db-backups"
+
 year=$(date "+%Y")
 month=$(date "+%B")
 day=$(date "+%d")
@@ -27,14 +25,23 @@ hour=$(date "+%H")
 
 deleteAfter="3 months"
 
-# Create directory structure of backup folder
-if [ ! -d $backupRoot\/$year\/$month\/$day ]
-then
-    mkdir -p $backupRoot\/$year\/$month\/$day
-fi
+listToDelete=$(find $backupRoot -type f -name "*.sql.gz")
 
-# backup the databases in the array
-for db in "${dbNames[@]}"
+# delete the databases in the array
+for fileToDelete in listToDelete
 do
-    mysqldump -uroot -ppassword -h$dbIP > \/$backupRoot\/$year\/$month\/$day\/"$hour:00 - $db.sql"
+    dirToDelete=$(echo $fileToDelete | awk -F'/' '{print $last}')
+    rm $fileToDelete
+    rmdir $dirToDelete
+    if month dir empty, delete
+    if year dir empty, delete
+        rmdir 
 done
+
+mysqldump -uroot -ppassword -h$dbIP > \/$backupRoot\/$year\/$month\/$day\/"$hour:00 - $db.sql"
+
+# Delete directory structure of backup folder
+if [ -d $backupRoot\/$year\/$month\/$day ]
+then
+    rmdir $backupRoot\/$year\/$month\/$day
+fi
