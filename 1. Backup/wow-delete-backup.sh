@@ -7,7 +7,7 @@
 #
 #   Author: Cymor
 #
-#   Description: used to delete old backups of the three databases for a docker WoW server
+#   Description: used to delete old backups of the three databases for a docker WoW server. I could have done it with one find command, but I wanted to allow for the directories being created at different times.
 #
 ######################################################################################
 #
@@ -15,33 +15,16 @@
 #
 ######################################################################################
 
-# Define the database names in an array for processing, database IP, and folder structure for backups
+# define vars
 backupRoot="$HOME/db-backups"
+deleteOlderThan=90 # days
 
-year=$(date "+%Y")
-month=$(date "+%B")
-day=$(date "+%d")
-hour=$(date "+%H")
+echo "Deleting"
 
-deleteAfter="3 months"
+# delete the databases past the limit
+find $backupRoot -type f -mtime +$deleteOlderThan -delete -print
 
-listToDelete=$(find $backupRoot -type f -name "*.sql.gz")
+# recursively delete empty dirs
+find $backupRoot/ -type d -empty -delete
 
-# delete the databases in the array
-for fileToDelete in listToDelete
-do
-    dirToDelete=$(echo $fileToDelete | awk -F'/' '{print $last}')
-    rm $fileToDelete
-    rmdir $dirToDelete
-    if month dir empty, delete
-    if year dir empty, delete
-        rmdir 
-done
-
-mysqldump -uroot -ppassword -h$dbIP > \/$backupRoot\/$year\/$month\/$day\/"$hour:00 - $db.sql"
-
-# Delete directory structure of backup folder
-if [ -d $backupRoot\/$year\/$month\/$day ]
-then
-    rmdir $backupRoot\/$year\/$month\/$day
-fi
+echo "Done"
