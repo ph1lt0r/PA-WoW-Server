@@ -35,5 +35,5 @@ fi
 # backup the databases in the array
 for db in "${dbNames[@]}"
 do
-    mysqldump -uroot -ppassword -h$dbIP > \/$backupRoot\/$year\/$month\/$day\/"$hour:00 - $db.sql"
+    mysqldump -uroot -ppassword -h$dbIP | gzip > \/$backupRoot\/$year\/$month\/$day\/"$hour:00 - $db.sql.gz"
 done
